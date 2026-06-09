@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="assets/icon-192.png">
 <title>Bergen & Fana · Reise-App</title>
 <style>
 :root{
@@ -233,6 +235,18 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
 .tapnote{font-size:11px; color:var(--muted); text-align:center; margin:-4px 0 10px}
 .muted{color:var(--muted); font-weight:400; font-size:12px}
 
+/* Install-Banner */
+.installbar{display:flex; align-items:center; gap:10px; color:#fff; border-radius:14px;
+  padding:12px 14px; margin-bottom:14px; box-shadow:var(--shadow);
+  background:linear-gradient(135deg,#0a7d3c,#0ea55a); animation:fade .3s ease}
+.installbar .ib-ic{font-size:24px; flex:0 0 auto}
+.installbar .ib-txt{display:flex; flex-direction:column; line-height:1.25; min-width:0}
+.installbar .ib-txt b{font-size:14px}
+.installbar .ib-txt span{font-size:11.5px; opacity:.92}
+.installbar .ib-btn{margin-left:auto; background:#fff; color:#0a7d3c; border:0; border-radius:10px;
+  padding:9px 14px; font-weight:700; font-size:13px; cursor:pointer; flex:0 0 auto}
+.installbar .ib-x{background:transparent; border:0; color:#fff; font-size:16px; cursor:pointer; opacity:.85; padding:4px; flex:0 0 auto}
+
 /* Weather */
 .wstrip{display:flex; gap:8px; overflow-x:auto; padding:2px 0 6px; scrollbar-width:none}
 .wstrip::-webkit-scrollbar{display:none}
@@ -304,6 +318,7 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
 <main>
   <!-- ÜBERSICHT -->
   <section id="home" class="active">
+    <div id="installBar"></div>
     <div class="hero" id="hero">
       <div class="htext">
         <h2>Velkommen! 🏔</h2>
@@ -456,6 +471,25 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
 </main>
 
 <div class="bnav" id="bnav"></div>
+
+<!-- iOS Install-Anleitung -->
+<div class="overlay" id="iosModal">
+  <div class="sheet">
+    <div class="ovbody" style="padding:22px">
+      <div style="display:flex; align-items:center; margin-bottom:8px">
+        <h3 style="margin:0; font-size:19px">📲 Zum Home-Bildschirm</h3>
+        <button class="btn" style="flex:0; min-width:auto; margin-left:auto; padding:6px 12px" onclick="closeIos()">✕</button>
+      </div>
+      <p style="font-size:14px; color:#33485c; margin:0 0 12px">So installiert ihr die App auf dem iPhone (Safari):</p>
+      <ol style="font-size:14.5px; color:#33485c; line-height:1.9; padding-left:22px; margin:0">
+        <li>Unten in Safari auf das <b>Teilen-Symbol</b> tippen (Quadrat mit Pfeil nach oben ⬆️).</li>
+        <li>Etwas nach unten scrollen und „<b>Zum Home-Bildschirm</b>" wählen.</li>
+        <li>Oben rechts auf <b>Hinzufügen</b> tippen – fertig! 🇳🇴</li>
+      </ol>
+      <button class="btn primary" style="width:100%; margin-top:16px" onclick="closeIos()">Verstanden</button>
+    </div>
+  </div>
+</div>
 
 <!-- Expense form overlay -->
 <div class="overlay" id="expModal">
@@ -958,6 +992,35 @@ loadKasseLocal(); renderKasse();
 loadRate(); loadWeather(); kasseSync(false);
 // Bei Rückkehr in die App neu syncen
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ kasseSync(false); } });
+
+/* ---------- PWA-Installation ---------- */
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+let deferredPrompt=null;
+function showInstallBar(mode){
+  const bar=$('#installBar'); if(!bar || isStandalone) return;
+  bar.innerHTML=`<div class="installbar">
+    <span class="ib-ic">📲</span>
+    <div class="ib-txt"><b>App installieren</b><span>Offline nutzbar &amp; schneller Zugriff vom Home-Bildschirm</span></div>
+    <button class="ib-btn" id="ibBtn">Installieren</button>
+    <button class="ib-x" id="ibX" title="ausblenden">✕</button></div>`;
+  bar.style.display='block';
+  $('#ibBtn').onclick=()=>{
+    if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; bar.style.display='none'; }); }
+    else { $('#iosModal').classList.add('open'); document.body.style.overflow='hidden'; }
+  };
+  $('#ibX').onclick=()=>{ bar.style.display='none'; }; // nur für diese Sitzung
+}
+function closeIos(){ $('#iosModal').classList.remove('open'); document.body.style.overflow=''; }
+$('#iosModal').addEventListener('click',e=>{ if(e.target.id==='iosModal') closeIos(); });
+
+if(!isStandalone){
+  window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; showInstallBar('native'); });
+  const ua=navigator.userAgent||'';
+  const isIOS=/iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints>1);
+  const isSafari=/safari/i.test(ua) && !/crios|fxios|edgios|android/i.test(ua);
+  if(isIOS && isSafari){ showInstallBar('ios'); }            // iOS kennt kein beforeinstallprompt
+}
+window.addEventListener('appinstalled',()=>{ const b=$('#installBar'); if(b) b.style.display='none'; });
 
 /* initial render */
 renderEat(); renderShop(); renderTrips();

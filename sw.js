@@ -1,6 +1,7 @@
 /* Simple offline cache for the Bergen travel app */
-const CACHE = 'bergen-v4';
-const ASSETS = ['index.html', 'data.js', 'manifest.json', 'assets/icon.svg'];
+const CACHE = 'bergen-v5';
+const ASSETS = ['index.html', 'data.js', 'manifest.json',
+  'assets/icon.svg', 'assets/icon-192.png', 'assets/icon-512.png', 'assets/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
