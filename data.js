@@ -14,7 +14,7 @@ const FX_FALLBACK = 11.9;                                            // NOK je C
 const KASSE_API = "https://api.restful-api.dev/objects/ff8081819d82fab6019eacbf7496578c";
 const MEMBERS = [
   { name:"Michelle", color:"#e0568f" },
-  { name:"Nathalie", color:"#8b5cf6" },
+  { name:"Natalie", color:"#8b5cf6" },
   { name:"Tobias",   color:"#0ea5a4" },
   { name:"Andreas",  color:"#f59e0b" },
   { name:"Simon",    color:"#3b82f6" },
