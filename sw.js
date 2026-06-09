@@ -1,5 +1,5 @@
 /* Simple offline cache for the Bergen travel app */
-const CACHE = 'bergen-v3';
+const CACHE = 'bergen-v4';
 const ASSETS = ['index.html', 'data.js', 'manifest.json', 'assets/icon.svg'];
 
 self.addEventListener('install', e => {

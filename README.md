@@ -28,8 +28,8 @@ Danach läuft sie wie eine echte App und **offline** (wichtig in Norwegen!).
 
 ## Funktionen
 - 🌦 **Live-Wetter** (7-Tage-Vorschau + Sonnenauf-/untergang) via Open-Meteo, mit Offline-Cache
-- 💰 **Reisekasse** – gemeinsame Ausgaben für Michelle, Nathalie, Tobias, Andreas & Simon, **geteilt & in der Cloud gespeichert**; mit Saldo pro Person und automatischem **Ausgleich (wer zahlt wem)**, NOK + €
-- 💱 **Währungsrechner** NOK ⇄ EUR mit Live-Kurs
+- 💰 **Reisekasse** – gemeinsame Ausgaben für Michelle, Nathalie, Tobias, Andreas & Simon, **geteilt & in der Cloud gespeichert**; mit Saldo pro Person und automatischem **Ausgleich (wer zahlt wem)**, NOK + CHF
+- 💱 **Währungsrechner** NOK ⇄ CHF mit Live-Kurs
 - 🟢 **„Jetzt geöffnet"-Anzeige** bei Läden/Vinmonopolet (aus den Öffnungszeiten berechnet, Bergen-Zeit)
 - 🍽 **Essen & Trinken** – Restaurants, Bars, Cafés mit Suche, Filter, Bildern & Google-Bewertungen
 - 🛒 **Versorgung** – Supermärkte, Vinmonopolet, Apotheken, Center, E-Laden

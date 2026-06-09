@@ -8,8 +8,8 @@ const HOME = "Austrevågen 111, 5244 Fana, Norway";
 
 /* ---- Live-Dienste (kostenlos, ohne API-Key) ---- */
 const GEO = { lat:60.29, lon:5.33, name:"Fana / Bergen" };           // Open-Meteo
-const FX_API = "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=NOK"; // Wechselkurs
-const FX_FALLBACK = 11.0;                                            // NOK je EUR, Notwert
+const FX_API = "https://api.frankfurter.dev/v1/latest?base=CHF&symbols=NOK"; // Wechselkurs
+const FX_FALLBACK = 11.9;                                            // NOK je CHF, Notwert
 /* Geteilte Reisekasse (persistenter Cloud-Store, von allen geteilt) */
 const KASSE_API = "https://api.restful-api.dev/objects/ff8081819d82fab6019eacbf7496578c";
 const MEMBERS = [

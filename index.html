@@ -433,7 +433,7 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
       <div style="display:flex; gap:8px; align-items:center">
         <input class="search" id="cvNok" type="number" inputmode="decimal" placeholder="NOK" style="margin:0">
         <span style="font-weight:700; color:var(--muted)">⇄</span>
-        <input class="search" id="cvEur" type="number" inputmode="decimal" placeholder="EUR" style="margin:0">
+        <input class="search" id="cvChf" type="number" inputmode="decimal" placeholder="CHF" style="margin:0">
       </div>
       <p class="tapnote" id="cvRate" style="margin:8px 0 0">Kurs wird geladen…</p>
     </div>
@@ -469,7 +469,7 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
       <div class="chips" id="expPayer"></div>
       <label class="flabel">Betrag (NOK)</label>
       <input class="search" id="expAmount" type="number" inputmode="decimal" placeholder="z. B. 450" style="margin-bottom:4px">
-      <div id="expEur" class="tapnote" style="text-align:left; margin:0 0 10px"></div>
+      <div id="expChf" class="tapnote" style="text-align:left; margin:0 0 10px"></div>
       <label class="flabel">Wofür?</label>
       <input class="search" id="expDesc" placeholder="z. B. Abendessen Pingvinen">
       <label class="flabel">Kategorie</label>
@@ -508,7 +508,7 @@ const enc = encodeURIComponent;
 const dirUrl = d => `https://www.google.com/maps/dir/?api=1&origin=${enc(HOME)}&destination=${enc(d)}`;
 const mapUrl = q => `https://www.google.com/maps/search/?api=1&query=${enc(q)}`;
 const stars = r => r ? '★ '+r.toFixed(1) : '';
-const euros = p => '€'.repeat(p||0);
+const tier = p => '₣'.repeat(p||0);
 const cleanArea = a => (a||'').split('·')[0].trim();
 
 /* Favorites */
@@ -556,7 +556,7 @@ function openDetail(obj, kind){
   // meta pills
   const meta=$('#ovmeta'); meta.innerHTML='';
   if(obj.rating) meta.appendChild(el('span','rating',stars(obj.rating)));
-  if(obj.price) meta.appendChild(el('span','pill',euros(obj.price)));
+  if(obj.price) meta.appendChild(el('span','pill',tier(obj.price)));
   if(kind==='trip'){ meta.appendChild(el('span','pill', obj.dur==='halb'?'🕐 Halbtag':'🌞 Ganztag')); meta.appendChild(el('span','pill','🚗 '+obj.drive)); }
   if(obj.hours) meta.appendChild(el('span','pill','🕑 '+obj.hours));
   (obj.tags||[]).forEach(t=>meta.appendChild(el('span','tag'+(/Empfehlung|Nächstes|Notfall|Sonntag/.test(t)?' hot':''),t)));
@@ -601,7 +601,7 @@ function placeCard(p){
     </div>
     <div class="body">
       <div class="top">
-        <div><h4>${p.name}</h4>${p.price?`<span class="price">${euros(p.price)}</span>`:''}</div>
+        <div><h4>${p.name}</h4>${p.price?`<span class="price">${tier(p.price)}</span>`:''}</div>
         ${p.rating?`<span class="rating">${stars(p.rating)}</span>`:''}
       </div>
       ${p.area?`<div class="area">📍 ${p.area}</div>`:''}
@@ -769,24 +769,24 @@ function openBadge(hours){
 }
 
 /* ---------- Wechselkurs ---------- */
-let RATE=FX_FALLBACK; // NOK je EUR
-const nok2eur=n=>n/RATE, eur2nok=e=>e*RATE;
-function fmtEur(n){ return '€'+ (Math.round(n*100)/100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function fmtNok(n){ return Math.round(n).toLocaleString('de-DE')+' kr'; }
+let RATE=FX_FALLBACK; // NOK je CHF
+const nok2chf=n=>n/RATE, chf2nok=e=>e*RATE;
+function fmtChf(n){ return 'Fr. '+ (Math.round(n*100)/100).toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtNok(n){ return Math.round(n).toLocaleString('de-CH')+' kr'; }
 async function loadRate(){
   try{ localStorage.getItem('bergen_rate') && (RATE=+localStorage.getItem('bergen_rate')); }catch(e){}
   try{
     const r=await fetch(FX_API,{cache:'no-store'}); const d=await r.json();
     if(d.rates && d.rates.NOK){ RATE=d.rates.NOK; localStorage.setItem('bergen_rate',RATE); }
   }catch(e){}
-  const cv=$('#cvRate'); if(cv) cv.textContent=`1 € ≈ ${RATE.toFixed(2)} kr  ·  100 kr ≈ ${(100/RATE).toFixed(2)} €`;
-  renderKasse(); updateExpEur();
+  const cv=$('#cvRate'); if(cv) cv.textContent=`1 CHF ≈ ${RATE.toFixed(2)} kr  ·  100 kr ≈ ${(100/RATE).toFixed(2)} CHF`;
+  renderKasse(); updateExpChf();
 }
 // Converter wiring
 (function(){
-  const nokI=$('#cvNok'), eurI=$('#cvEur');
-  if(nokI){ nokI.oninput=()=>{ eurI.value = nokI.value? (nok2eur(+nokI.value)).toFixed(2):''; };
-            eurI.oninput=()=>{ nokI.value = eurI.value? (eur2nok(+eurI.value)).toFixed(0):''; }; }
+  const nokI=$('#cvNok'), eurI=$('#cvChf');
+  if(nokI){ nokI.oninput=()=>{ eurI.value = nokI.value? (nok2chf(+nokI.value)).toFixed(2):''; };
+            eurI.oninput=()=>{ nokI.value = eurI.value? (chf2nok(+eurI.value)).toFixed(0):''; }; }
 })();
 
 /* ---------- Wetter (Open-Meteo) ---------- */
@@ -881,8 +881,8 @@ function renderKasse(){
   // Summary
   $('#kSummary').innerHTML=`<div class="ksum">
     <div class="totl">Gesamt ausgegeben</div>
-    <div class="tot">${fmtNok(total)} <span style="font-size:15px;opacity:.8">≈ ${fmtEur(nok2eur(total))}</span></div>
-    <div class="perhead">Saldo pro Person (${fmtNok(per)} ≈ ${fmtEur(nok2eur(per))} im Schnitt)</div>
+    <div class="tot">${fmtNok(total)} <span style="font-size:15px;opacity:.8">≈ ${fmtChf(nok2chf(total))}</span></div>
+    <div class="perhead">Saldo pro Person (${fmtNok(per)} ≈ ${fmtChf(nok2chf(per))} im Schnitt)</div>
     ${MEMBERS.map(m=>{const v=bal[m.name]; const pos=v>=0;
       return `<div class="kbal">${avatar(m.name)}<span class="nm">${m.name}</span>
         <span class="amt ${pos?'pos':'neg'}">${pos?'+':'−'}${fmtNok(Math.abs(v))}</span></div>`;}).join('')}
@@ -899,7 +899,7 @@ function renderKasse(){
     return `<div class="exp">${avatar(e.payer)}
       <div class="einfo"><div class="edesc">${e.cat?e.cat.split(' ')[0]+' ':''}${e.desc||'Ausgabe'}</div>
         <div class="emeta">${e.payer} · geteilt: ${split.length===MEMBERS.length?'alle':split.join(', ')}</div></div>
-      <div class="eamt"><b>${fmtNok(e.amount)}</b><small>${fmtEur(nok2eur(e.amount))}</small></div>
+      <div class="eamt"><b>${fmtNok(e.amount)}</b><small>${fmtChf(nok2chf(e.amount))}</small></div>
       <button class="edel" onclick="deleteExpense('${e.id}')">🗑</button></div>`;
   }).join('') : '<div class="empty">Noch keine Ausgaben. Tippt „＋ Ausgabe hinzufügen".</div>';
 }
@@ -923,7 +923,7 @@ function chipRow(container, options, selected, onToggle, multi){
 }
 function openExpenseForm(){
   formState={payer:'Simon', cat:EXP_CATS[0], split:MEMBERS.map(m=>m.name)};
-  $('#expAmount').value=''; $('#expDesc').value=''; $('#expEur').textContent='';
+  $('#expAmount').value=''; $('#expDesc').value=''; $('#expChf').textContent='';
   renderPayer(); renderCat(); renderSplit();
   $('#expModal').classList.add('open'); document.body.style.overflow='hidden';
 }
@@ -937,11 +937,11 @@ function renderSplit(){
   }, true);
   $('#expSplitCount').textContent='('+formState.split.length+'/'+MEMBERS.length+')';
 }
-function updateExpEur(){
+function updateExpChf(){
   const v=+($('#expAmount')?.value||0);
-  const t=$('#expEur'); if(t) t.textContent = v? `≈ ${fmtEur(nok2eur(v))}` : '';
+  const t=$('#expChf'); if(t) t.textContent = v? `≈ ${fmtChf(nok2chf(v))}` : '';
 }
-$('#expAmount') && ($('#expAmount').oninput=updateExpEur);
+$('#expAmount') && ($('#expAmount').oninput=updateExpChf);
 function closeExpenseForm(){ $('#expModal').classList.remove('open'); document.body.style.overflow=''; }
 $('#expModal').addEventListener('click',e=>{ if(e.target.id==='expModal') closeExpenseForm(); });
 function submitExpense(){
