@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a2540">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>Bergen & Fana · Reise-App</title>
+<style>
+:root{
+  --navy:#0a2540; --navy2:#123a5e; --red:#c8102e; --red2:#e23b54;
+  --ice:#eaf2f8; --sky:#5b9bd5; --gold:#e9b949;
+  --bg:#f4f7fa; --card:#ffffff; --ink:#13212e; --muted:#5d7186;
+  --line:#e2e9f0; --shadow:0 2px 12px rgba(10,37,64,.08);
+  --r:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.5;
+  -webkit-font-smoothing:antialiased; padding-bottom:78px;
+}
+a{color:inherit}
+img{max-width:100%}
+
+header{
+  position:sticky; top:0; z-index:50;
+  background:linear-gradient(135deg,var(--navy),var(--navy2));
+  color:#fff; padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
+  box-shadow:var(--shadow);
+}
+.hwrap{display:flex; align-items:center; gap:12px}
+.flag{font-size:26px; line-height:1}
+.htxt h1{margin:0; font-size:18px; font-weight:700; letter-spacing:.2px}
+.htxt p{margin:2px 0 0; font-size:12px; opacity:.85}
+.countdown{margin-left:auto; text-align:right; font-size:11px; opacity:.9}
+.countdown b{display:block; font-size:18px; line-height:1.1}
+
+nav.tabs{
+  position:sticky; top:0; z-index:40; background:var(--navy);
+  display:flex; gap:4px; overflow-x:auto; padding:8px 10px; scrollbar-width:none;
+}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{
+  flex:0 0 auto; border:0; background:rgba(255,255,255,.08); color:#cfe0ee;
+  padding:8px 14px; border-radius:999px; font-size:13px; font-weight:600;
+  white-space:nowrap; cursor:pointer; transition:.2s;
+}
+nav.tabs button.active{background:var(--red); color:#fff}
+
+main{padding:14px 14px 30px; max-width:780px; margin:0 auto}
+section{display:none; animation:fade .25s ease}
+section.active{display:block}
+@keyframes fade{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:none}}
+
+h2.sec{font-size:20px; margin:6px 0 4px; display:flex; align-items:center; gap:8px}
+.lead{color:var(--muted); font-size:14px; margin:0 0 14px}
+h3.sub{font-size:14px; text-transform:uppercase; letter-spacing:.6px; color:var(--sky);
+  margin:22px 0 10px; display:flex; align-items:center; gap:8px}
+h3.sub::after{content:""; flex:1; height:1px; background:var(--line)}
+
+/* Cards */
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  margin-bottom:12px; box-shadow:var(--shadow); overflow:hidden; cursor:pointer;
+  transition:transform .12s ease;
+}
+.card:active{transform:scale(.99)}
+.card .thumb{position:relative; height:150px; background:#dfe8f0 center/cover no-repeat}
+.card .thumb::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.45))}
+.card .thumbtag{position:absolute; left:10px; bottom:10px; z-index:2; color:#fff;
+  font-size:12px; font-weight:700; text-shadow:0 1px 4px rgba(0,0,0,.5)}
+.card .fav{position:absolute; right:8px; top:8px; z-index:3; width:38px; height:38px;
+  border-radius:50%; background:rgba(0,0,0,.4); color:#fff; border:0; font-size:18px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(4px)}
+.card .fav.on{color:var(--gold)}
+.card .body{padding:12px 14px}
+.card .top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+.card h4{margin:0; font-size:16px; font-weight:700}
+.kind{font-size:12px; color:var(--sky); font-weight:600}
+.area{font-size:12.5px; color:var(--muted); margin:3px 0 0}
+.note{font-size:13px; margin:8px 0 0; color:#33485c}
+.rating{flex:0 0 auto; background:var(--ice); color:var(--navy); font-weight:700;
+  font-size:13px; padding:3px 9px; border-radius:999px; white-space:nowrap}
+.hours{font-size:12.5px; margin:7px 0 0; color:var(--navy); font-weight:600;
+  background:var(--ice); display:inline-block; padding:4px 9px; border-radius:8px}
+.tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px}
+.tag{font-size:11px; background:#eef3f8; color:#52708a; padding:3px 9px; border-radius:999px}
+.tag.hot{background:#fde7ea; color:var(--red)}
+.price{color:var(--gold); font-weight:700; font-size:13px; margin-left:6px}
+.metarow{display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap}
+.pill{font-size:12px; font-weight:600; color:var(--navy); background:var(--ice);
+  padding:3px 9px; border-radius:999px}
+
+/* Filters */
+.filters{display:flex; gap:8px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto; border:1px solid var(--line); background:#fff; color:var(--muted);
+  padding:7px 13px; border-radius:999px; font-size:13px; font-weight:600; cursor:pointer}
+.chip.active{background:var(--navy); color:#fff; border-color:var(--navy)}
+.search{width:100%; padding:11px 14px; border:1px solid var(--line); border-radius:12px;
+  font-size:15px; margin-bottom:10px; background:#fff}
+.search:focus{outline:none; border-color:var(--sky)}
+
+/* Itinerary */
+.day{background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+  margin-bottom:12px; box-shadow:var(--shadow); overflow:hidden}
+.day .dhead{display:flex; align-items:center; gap:12px; padding:14px; cursor:pointer;
+  background:linear-gradient(135deg,#fff,#f3f8fc)}
+.day .dicon{font-size:22px}
+.day .ddate{font-size:12px; color:var(--red); font-weight:700}
+.day .dtitle{font-size:15px; font-weight:700}
+.day .arrow{margin-left:auto; transition:.25s; color:var(--muted)}
+.day.open .arrow{transform:rotate(90deg)}
+.day ul{margin:0; padding:0 16px 14px 34px; display:none}
+.day.open ul{display:block}
+.day li{font-size:13.5px; margin:7px 0; color:#33485c}
+
+/* Phrases */
+.pgroup{margin-bottom:8px; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff}
+.pgroup .ph{padding:12px 14px; font-weight:700; font-size:14px; cursor:pointer;
+  display:flex; align-items:center; gap:8px; background:#f3f8fc}
+.pgroup .ph .arrow{margin-left:auto; transition:.25s; color:var(--muted)}
+.pgroup.open .ph .arrow{transform:rotate(90deg)}
+.pgroup .pbody{display:none}
+.pgroup.open .pbody{display:block}
+.prow{display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; padding:10px 14px;
+  border-top:1px solid var(--line); font-size:13.5px}
+.prow .no{font-weight:700; color:var(--navy)}
+.prow .de{color:#33485c}
+.prow .pr{grid-column:1/-1; font-size:12px; color:var(--sky); font-style:italic}
+
+/* Food cards small */
+.foodcard{display:flex; gap:12px; align-items:center; background:#fff; border:1px solid var(--line);
+  border-radius:14px; padding:8px; margin-bottom:10px; box-shadow:var(--shadow)}
+.foodcard img{width:74px; height:74px; object-fit:cover; border-radius:10px; flex:0 0 auto}
+.foodcard h4{margin:0 0 3px; font-size:14.5px}
+.foodcard p{margin:0; font-size:12.5px; color:#33485c}
+
+/* Emergency */
+.emerg{background:linear-gradient(135deg,#c8102e,#9c0a22); color:#fff;
+  border-radius:var(--r); padding:16px; margin-bottom:14px; box-shadow:var(--shadow)}
+.emerg h3{margin:0 0 10px; font-size:16px}
+.egrid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.ecall{background:rgba(255,255,255,.14); border-radius:12px; padding:10px 12px;
+  text-decoration:none; color:#fff; display:block}
+.ecall .lbl{font-size:11px; opacity:.9}
+.ecall .num{font-size:22px; font-weight:800}
+
+/* Info */
+.info{background:#fff; border:1px solid var(--line); border-radius:var(--r);
+  padding:14px; margin-bottom:12px; box-shadow:var(--shadow)}
+.info h4{margin:0 0 6px; font-size:15px; display:flex; align-items:center; gap:7px}
+.info p{margin:4px 0; font-size:13.5px; color:#33485c}
+.info ul{margin:6px 0; padding-left:20px; font-size:13.5px; color:#33485c}
+.info li{margin:4px 0}
+.kv{display:flex; justify-content:space-between; gap:10px; font-size:13.5px;
+  padding:7px 0; border-bottom:1px dashed var(--line)}
+.kv:last-child{border:0}
+.kv b{color:var(--navy)}
+
+/* Packing */
+.check{display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+  background:#fff; border:1px solid var(--line); border-radius:12px; margin-bottom:8px; font-size:14px; cursor:pointer}
+.check input{margin-top:3px; width:18px; height:18px; accent-color:var(--navy); flex:0 0 auto}
+.check.done span{text-decoration:line-through; color:var(--muted)}
+
+/* Hero */
+.hero{position:relative; border-radius:var(--r); overflow:hidden; margin-bottom:16px;
+  box-shadow:var(--shadow); min-height:170px; display:flex; align-items:flex-end;
+  color:#fff; background:var(--navy) center/cover no-repeat}
+.hero::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,37,64,.1),rgba(10,37,64,.8))}
+.hero .htext{position:relative; z-index:2; padding:18px}
+.hero h2{margin:0 0 4px; font-size:23px}
+.hero p{margin:0; font-size:13.5px; opacity:.95}
+.statgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0}
+.stat{background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center; box-shadow:var(--shadow)}
+.stat .n{font-size:21px; font-weight:800; color:var(--navy)}
+.stat .l{font-size:11px; color:var(--muted); margin-top:2px}
+.quick{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+.qbtn{background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px; text-align:left;
+  cursor:pointer; box-shadow:var(--shadow); font-weight:600; font-size:14px; display:flex; align-items:center; gap:10px}
+.qbtn .qi{font-size:22px}
+.callout{background:#fff6e0; border:1px solid #f0dca0; border-radius:14px; padding:12px 14px;
+  font-size:13px; color:#7a5b10; margin:14px 0}
+.callout b{color:#8a4b00}
+.empty{text-align:center; color:var(--muted); padding:30px; font-size:14px}
+footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 30px}
+
+/* Bottom nav */
+.bnav{position:fixed; bottom:0; left:0; right:0; z-index:60; background:#fff;
+  border-top:1px solid var(--line); display:flex; padding:6px 4px calc(env(safe-area-inset-bottom) + 6px);
+  box-shadow:0 -2px 12px rgba(10,37,64,.06)}
+.bnav button{flex:1; border:0; background:none; padding:6px 2px; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:10px; font-weight:600}
+.bnav button .bi{font-size:20px}
+.bnav button.active{color:var(--red)}
+
+/* Detail overlay */
+.overlay{position:fixed; inset:0; z-index:100; background:rgba(8,20,33,.55);
+  display:none; align-items:flex-end; justify-content:center}
+.overlay.open{display:flex}
+.sheet{background:#fff; width:100%; max-width:600px; max-height:92vh; border-radius:22px 22px 0 0;
+  overflow:hidden; display:flex; flex-direction:column; animation:up .28s ease}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@media(min-width:600px){
+  .overlay{align-items:center} .sheet{border-radius:22px; max-height:88vh}
+}
+.ovimg{position:relative; height:210px; background:#dfe8f0 center/cover no-repeat; flex:0 0 auto}
+.ovimg::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.5))}
+.ovimg .ovtitle{position:absolute; left:16px; bottom:14px; right:16px; z-index:2; color:#fff}
+.ovimg .ovtitle h3{margin:0; font-size:22px; text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.ovimg .ovtitle .ovkind{font-size:13px; font-weight:600; text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.ovclose{position:absolute; right:12px; top:12px; z-index:3; width:38px; height:38px; border-radius:50%;
+  background:rgba(0,0,0,.45); color:#fff; border:0; font-size:18px; cursor:pointer; backdrop-filter:blur(4px)}
+.ovfav{position:absolute; right:58px; top:12px; z-index:3; width:38px; height:38px; border-radius:50%;
+  background:rgba(0,0,0,.45); color:#fff; border:0; font-size:18px; cursor:pointer; backdrop-filter:blur(4px)}
+.ovfav.on{color:var(--gold)}
+.ovbody{padding:16px; overflow-y:auto}
+.ovbody .ovmeta{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px}
+.ovbody .desc{font-size:14.5px; color:#2c4156; line-height:1.6}
+.ovbody .area{font-size:13px; margin:10px 0 0}
+.actions{display:flex; gap:8px; margin-top:14px; flex-wrap:wrap}
+.btn{flex:1; min-width:130px; text-align:center; text-decoration:none; padding:11px 12px; border-radius:11px;
+  font-size:13.5px; font-weight:600; border:1px solid var(--line); background:#fff; color:var(--navy);
+  cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px}
+.btn.primary{background:var(--navy); color:#fff; border-color:var(--navy)}
+.btn.call{background:#eafaf0; color:#0a7d3c; border-color:#cdeeda}
+.btn.google{background:#fff4e5; color:#b5651d; border-color:#f0d9b5}
+.tapnote{font-size:11px; color:var(--muted); text-align:center; margin:-4px 0 10px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <span class="flag">🇳🇴</span>
+    <div class="htxt">
+      <h1>Bergen &amp; Fana</h1>
+      <p>Austrevågen 111 · 20.–27. Juni 2026</p>
+    </div>
+    <div class="countdown" id="countdown"></div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main>
+  <!-- ÜBERSICHT -->
+  <section id="home" class="active">
+    <div class="hero" id="hero">
+      <div class="htext">
+        <h2>Velkommen! 🏔</h2>
+        <p>Eure Reise-App für die Woche nahe Bergen – Restaurants, Einkaufen, Ausflüge &amp; Sprache. Tippt auf Karten für Details &amp; Bilder.</p>
+      </div>
+    </div>
+    <div class="statgrid">
+      <div class="stat"><div class="n">8</div><div class="l">Tage</div></div>
+      <div class="stat"><div class="n">16</div><div class="l">Ausflüge</div></div>
+      <div class="stat"><div class="n">~19h</div><div class="l">Tageslicht</div></div>
+    </div>
+
+    <h3 class="sub">⭐ Ausflug-Highlights</h3>
+    <div id="homeTrips"></div>
+    <button class="btn primary" style="width:100%; margin:2px 0 6px" onclick="go('trips')">🧭 Alle 16 Ausflüge ansehen →</button>
+
+    <h3 class="sub">📌 Gut zu wissen</h3>
+    <div class="info">
+      <div class="kv"><span>🛒 Sonntag</span><b>Läden zu – Großeinkauf bis Samstag</b></div>
+      <div class="kv"><span>🍷 Alkohol</span><b>Wein/Spirituosen bis Sa 16:00 (Vinmonopolet)</b></div>
+      <div class="kv"><span>🎟 Große Touren</span><b>Früh buchen (Nutshell, Cornelius)</b></div>
+      <div class="kv"><span>🛬 Sa 20.6.</span><b>Anreise · 🧳 Sa 27.6. Abreise</b></div>
+    </div>
+    <div class="callout">🔥 <b>Di, 23. Juni – Sankthansaften:</b> Norwegens Mittsommer mit Lagerfeuern an der Küste. Abends an einem Hafen/einer Insel ein echtes Highlight!</div>
+    <div class="callout">☔ <b>Bergen-Faustregel:</b> Es regnet oft – aber das Wetter wechselt schnell. Immer Regenjacke dabei. Im Juni ist es bis ~23 Uhr hell.</div>
+
+    <h3 class="sub">Schnellzugriff</h3>
+    <div class="quick" id="quicklinks"></div>
+  </section>
+
+  <!-- ESSEN & TRINKEN -->
+  <section id="eat">
+    <h2 class="sec">🍽 Essen &amp; Trinken</h2>
+    <p class="lead">Tippt eine Karte für Details, Bild &amp; Google-Bewertungen.</p>
+    <input class="search" id="eatSearch" placeholder="🔍 Suchen (z. B. Sushi, Fisch, Bar)…">
+    <div class="filters" id="eatFilters"></div>
+    <div id="eatList"></div>
+  </section>
+
+  <!-- VERSORGUNG -->
+  <section id="shop">
+    <h2 class="sec">🛒 Versorgung</h2>
+    <p class="lead">Supermärkte, Vinmonopolet, Apotheken, Center &amp; E-Laden.</p>
+    <div class="callout">⚠️ <b>Wichtig:</b> Wein/Spirituosen NUR im <b>Vinmonopolet</b> (Sa bis 15–16 Uhr, So zu). Supermärkte: Bier ≤4,7 % nur Mo–Fr bis 20, Sa bis 18 Uhr – nie sonntags. Wochenendeinkauf bis Samstagmittag erledigen!</div>
+    <div class="filters" id="shopFilters"></div>
+    <div id="shopList"></div>
+  </section>
+
+  <!-- AUSFLÜGE -->
+  <section id="trips">
+    <h2 class="sec">🧭 Ausflüge</h2>
+    <p class="lead">Wählt selbst aus – tippt eine Karte für Bild &amp; ausführliche Beschreibung. ☆ = merken.</p>
+    <div class="filters" id="tripFilters"></div>
+    <div id="tripList"></div>
+  </section>
+
+  <!-- SPRACHE -->
+  <section id="lang">
+    <h2 class="sec">🗣 Sprachführer</h2>
+    <p class="lead">Norwegisch (Bokmål) · Deutsch · <i>Aussprache</i>. Tippt eine Gruppe zum Aufklappen.</p>
+    <div id="phrases"></div>
+    <h3 class="sub">🍴 Spezialitäten zum Probieren</h3>
+    <div id="foodList"></div>
+  </section>
+
+  <!-- PRAKTISCH -->
+  <section id="info">
+    <h2 class="sec">ℹ️ Praktisch</h2>
+    <p class="lead">Notfall, Geld, Transport, Wetter, Packliste &amp; Geschichte.</p>
+    <div class="emerg">
+      <h3>🚨 Notruf Norwegen</h3>
+      <div class="egrid" id="emergGrid"></div>
+      <p style="font-size:12.5px; margin:12px 0 0; opacity:.95">
+        <b>Bergen Legevakt</b> (24 h): Solheimsgaten 9, Danmarksplass · Tel. 116 117<br>
+        <b>Notapotheke:</b> Vitusapotek Nordstjernen, Strømgaten 8 – täglich bis 23 Uhr.
+      </p>
+    </div>
+
+    <h3 class="sub">🚆 Transport &amp; Fahren</h3>
+    <div class="info">
+      <h4>🚈 Bybane (Stadtbahn) in die Stadt</h4>
+      <p>Linie 1 ab <b>Nesttun</b> oder <b>Lagunen</b> bis Zentrum (~25–30 Min), alle 4–10 Min. Ticket <b>vor</b> dem Einsteigen via <b>Skyss-App</b> (kein Verkauf an Bord). Einzelticket Zone A ~51 NOK, 60 Min gültig.</p>
+    </div>
+    <div class="info">
+      <h4>🚗 Mietwagen &amp; Maut</h4>
+      <ul>
+        <li><b>AutoPASS-Maut:</b> keine Schranken, Kameras lesen das Kennzeichen – wird automatisch über die Mietfirma abgerechnet.</li>
+        <li><b>Licht IMMER an</b> (24/7 Pflicht, auch tagsüber).</li>
+        <li>Tempo: 50 innerorts (oft 30 in Wohngebieten), 80 Land, bis 110 Autobahn – streng geblitzt.</li>
+        <li>⚠️ <b>Alkohol am Steuer:</b> 0,2-Promille-Grenze – praktisch null Toleranz.</li>
+        <li>Parken Bergen: ByGarasjen (am Busbahnhof, ideal für Park&amp;Ride zur Bybane), ~25–52 NOK/h.</li>
+      </ul>
+    </div>
+    <div class="info">
+      <h4>🔌 E-Laden</h4>
+      <p>Apps vorab laden: <b>Mer</b>, <b>Recharge/Eviny</b>, <b>Plugsurfing</b> (netzübergreifend), Tesla-App. Die meisten Schnelllader nehmen auch kontaktlos Karte. Lade-Hub direkt am Lagunen.</p>
+    </div>
+
+    <h3 class="sub">💳 Geld &amp; Alltag</h3>
+    <div class="info">
+      <div class="kv"><span>Währung</span><b>Norwegische Krone (NOK)</b></div>
+      <div class="kv"><span>Bezahlen</span><b>Fast bargeldlos – Karte/Apple Pay überall</b></div>
+      <div class="kv"><span>Trinkgeld</span><b>Nicht erwartet (ggf. aufrunden)</b></div>
+      <div class="kv"><span>Leitungswasser</span><b>Top – einfach trinken</b></div>
+      <div class="kv"><span>Steckdose</span><b>Typ F, 230 V – wie DE, kein Adapter</b></div>
+      <div class="kv"><span>Mobilfunk</span><b>EU-Roaming gilt – keine Extra-SIM nötig</b></div>
+      <div class="kv"><span>Alkoholalter</span><b>18 (Bier/Wein) · 20 (Spirituosen)</b></div>
+      <div class="kv"><span>Sonntags</span><b>Läden zu (ausser Bunnpris/Kiosk/Bäcker)</b></div>
+    </div>
+
+    <h3 class="sub">🌦 Wetter Ende Juni</h3>
+    <div class="info">
+      <p>Tags <b>15–18 °C</b> (Sonne bis ~22 °C), nachts ~10–12 °C. Regnerisch – mehrere Schauer pro Woche. <b>~19 h Tageslicht</b>, Sonne ~04:15–23:15, „weisse Nächte". Juni ist Bergens sonnigster Monat.</p>
+    </div>
+
+    <h3 class="sub">🎒 Packliste</h3>
+    <div id="packing"></div>
+
+    <h3 class="sub">📜 Geschichte von Bergen</h3>
+    <div class="info">
+      <p>Bergen wurde um <b>1070</b> von König Olav Kyrre gegründet und war im 12./13. Jh. <b>Hauptstadt Norwegens</b>. In der <b>Hansezeit</b> kontrollierte die deutsche Hanse den Handel – Bergen war Europas Zentrum für Stockfisch. Das Hanseviertel <b>Bryggen</b> ist heute UNESCO-Welterbe.</p>
+      <p>Bergen heisst „Stadt zwischen den sieben Bergen" und ist für viel Regen bekannt (~2.250 mm/Jahr). Die Entdecker <b>Fridtjof Nansen</b> und <b>Roald Amundsen</b> sowie der Komponist <b>Edvard Grieg</b> (Troldhaugen!) prägen Norwegens Geschichte.</p>
+    </div>
+    <footer>Mit ❤️ erstellt für eure Norwegen-Reise · Daten Stand Juni 2026 · Bilder: Wikimedia Commons · Öffnungszeiten vor Ort prüfen.</footer>
+  </section>
+</main>
+
+<div class="bnav" id="bnav"></div>
+
+<!-- Detail overlay -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="ovimg" id="ovimg">
+      <button class="ovclose" onclick="closeDetail()">✕</button>
+      <button class="ovfav" id="ovfav">☆</button>
+      <div class="ovtitle"><div class="ovkind" id="ovkind"></div><h3 id="ovname"></h3></div>
+    </div>
+    <div class="ovbody">
+      <div class="ovmeta" id="ovmeta"></div>
+      <div class="desc" id="ovdesc"></div>
+      <div class="area" id="ovarea"></div>
+      <div class="actions" id="ovactions"></div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+const enc = encodeURIComponent;
+const dirUrl = d => `https://www.google.com/maps/dir/?api=1&origin=${enc(HOME)}&destination=${enc(d)}`;
+const mapUrl = q => `https://www.google.com/maps/search/?api=1&query=${enc(q)}`;
+const stars = r => r ? '★ '+r.toFixed(1) : '';
+const euros = p => '€'.repeat(p||0);
+const cleanArea = a => (a||'').split('·')[0].trim();
+
+/* Favorites */
+const FAV_KEY='bergen_fav';
+let favs=new Set(); try{favs=new Set(JSON.parse(localStorage.getItem(FAV_KEY)||'[]'));}catch(e){}
+const isFav=id=>favs.has(id);
+function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); localStorage.setItem(FAV_KEY,JSON.stringify([...favs])); }
+
+/* Tabs */
+const TABS=[['home','Start'],['eat','Essen'],['shop','Shops'],['trips','Ausflüge'],['lang','Sprache'],['info','Praktisch']];
+const tabsEl=$('#tabs'), bnavEl=$('#bnav');
+TABS.forEach(([id,l])=>{const b=el('button',null,l); b.dataset.id=id; b.onclick=()=>go(id); tabsEl.appendChild(b);});
+const BNAV=[['home','🏠','Start'],['eat','🍽','Essen'],['shop','🛒','Shops'],['trips','🧭','Touren'],['info','ℹ️','Info']];
+BNAV.forEach(([id,ic,l])=>{const b=el('button',null,`<span class="bi">${ic}</span>${l}`); b.dataset.id=id; b.onclick=()=>go(id); bnavEl.appendChild(b);});
+function go(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
+  tabsEl.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  bnavEl.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  const at=tabsEl.querySelector(`button[data-id="${id}"]`); if(at) at.scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* Hero + countdown */
+$('#hero').style.backgroundImage=`url("${IMG.bryggen}")`;
+(function(){
+  const start=new Date('2026-06-20T00:00:00'), now=new Date();
+  const diff=Math.ceil((start-now)/(864e5)); const c=$('#countdown');
+  if(diff>0) c.innerHTML=`noch<b>${diff}</b>Tage`;
+  else if(diff<=0 && diff>-8) c.innerHTML=`Tag<b>${8+diff}</b>von 8`;
+  else c.innerHTML=`God tur!`;
+})();
+
+/* Quick links */
+[['eat','🍽','Wo essen?'],['shop','🛒','Einkaufen'],['trips','🧭','Ausflüge'],['lang','🗣','Sprachhilfe'],['info','🚨','Notfall & Info']]
+.forEach(([id,ic,l])=>{const b=el('button','qbtn',`<span class="qi">${ic}</span>${l}`); b.onclick=()=>go(id); $('#quicklinks').appendChild(b);});
+
+/* ---------- Detail overlay ---------- */
+let currentDetail=null;
+function openDetail(obj, kind){
+  currentDetail={obj,kind};
+  const img=obj.img||IMG.bergen;
+  $('#ovimg').style.backgroundImage=`url("${img}")`;
+  $('#ovname').textContent=obj.name;
+  $('#ovkind').textContent=obj.kind|| (kind==='trip'?(obj.dur==='halb'?'Halbtagesausflug':'Ganztagesausflug'):'');
+  // meta pills
+  const meta=$('#ovmeta'); meta.innerHTML='';
+  if(obj.rating) meta.appendChild(el('span','rating',stars(obj.rating)));
+  if(obj.price) meta.appendChild(el('span','pill',euros(obj.price)));
+  if(kind==='trip'){ meta.appendChild(el('span','pill', obj.dur==='halb'?'🕐 Halbtag':'🌞 Ganztag')); meta.appendChild(el('span','pill','🚗 '+obj.drive)); }
+  if(obj.hours) meta.appendChild(el('span','pill','🕑 '+obj.hours));
+  (obj.tags||[]).forEach(t=>meta.appendChild(el('span','tag'+(/Empfehlung|Nächstes|Notfall|Sonntag/.test(t)?' hot':''),t)));
+  $('#ovdesc').innerHTML=obj.details||obj.note||'';
+  $('#ovarea').innerHTML=obj.area?`📍 ${obj.area}`:'';
+  // fav
+  const fav=$('#ovfav'); const favable=(kind==='trip'||kind==='place');
+  fav.style.display=favable?'flex':'none';
+  fav.className='ovfav'+(isFav(obj.name)?' on':''); fav.textContent=isFav(obj.name)?'★':'☆';
+  fav.onclick=()=>{toggleFav(obj.name); fav.className='ovfav'+(isFav(obj.name)?' on':''); fav.textContent=isFav(obj.name)?'★':'☆'; rerenderLists();};
+  // actions
+  const act=$('#ovactions'); act.innerHTML='';
+  const dest = obj.map || (obj.name+' '+cleanArea(obj.area));
+  act.appendChild(linkBtn('🧭 Route','primary',dirUrl(dest)));
+  if(kind==='place'){
+    act.appendChild(linkBtn('★ Google-Bewertungen','google',mapUrl(obj.name+', '+cleanArea(obj.area)+' Bergen')));
+    if(obj.phone) act.appendChild(linkBtn('📞 Anrufen','call','tel:'+obj.phone));
+  } else if(kind==='trip'){
+    act.appendChild(linkBtn('🗺 Auf Karte','',mapUrl(obj.map)));
+  } else {
+    act.appendChild(linkBtn('🗺 Auf Karte','',mapUrl(obj.name+' '+cleanArea(obj.area))));
+    if(obj.phone) act.appendChild(linkBtn('📞 Anrufen','call','tel:'+obj.phone));
+  }
+  $('#overlay').classList.add('open'); document.body.style.overflow='hidden';
+}
+function linkBtn(label,cls,href){const a=el('a','btn'+(cls?' '+cls:''),label); a.href=href; a.target='_blank'; a.rel='noopener'; return a;}
+function closeDetail(){ $('#overlay').classList.remove('open'); document.body.style.overflow=''; }
+$('#overlay').addEventListener('click',e=>{ if(e.target.id==='overlay') closeDetail(); });
+
+/* ---------- Card builder ---------- */
+function favBtn(obj){
+  const b=el('button','fav'+(isFav(obj.name)?' on':''), isFav(obj.name)?'★':'☆');
+  b.onclick=(e)=>{e.stopPropagation(); toggleFav(obj.name); rerenderLists(); };
+  return b;
+}
+function placeCard(p){
+  const c=el('div','card');
+  const tags=(p.tags||[]).map(t=>`<span class="tag ${/Empfehlung|Nächstes|Notfall|Sonntag/.test(t)?'hot':''}">${t}</span>`).join('');
+  c.innerHTML=`
+    <div class="thumb" style="background-image:url('${p.img||IMG.bergen}')">
+      <div class="thumbtag">${p.kind||''}</div>
+    </div>
+    <div class="body">
+      <div class="top">
+        <div><h4>${p.name}</h4>${p.price?`<span class="price">${euros(p.price)}</span>`:''}</div>
+        ${p.rating?`<span class="rating">${stars(p.rating)}</span>`:''}
+      </div>
+      ${p.area?`<div class="area">📍 ${p.area}</div>`:''}
+      ${p.hours?`<div class="hours">🕑 ${p.hours}</div>`:''}
+      ${p.note?`<div class="note">${p.note}</div>`:''}
+      ${tags?`<div class="tags">${tags}</div>`:''}
+    </div>`;
+  c.querySelector('.thumb').appendChild(favBtnFor(p,'place'));
+  c.onclick=()=>openDetail(p, p.cat? (['food','wine','pharma','mall'].includes(p.cat)?'supply':'place') : 'place');
+  return c;
+}
+function favBtnFor(obj,kind){
+  if(kind==='supply') return document.createComment('');
+  return favBtn(obj);
+}
+function tripCard(t){
+  const c=el('div','card');
+  const dur=t.dur==='halb'?'🕐 Halbtag':'🌞 Ganztag';
+  const tags=(t.tags||[]).map(x=>`<span class="tag ${x==='Empfehlung'?'hot':''}">${x}</span>`).join('');
+  c.innerHTML=`
+    <div class="thumb" style="background-image:url('${t.img||IMG.bergen}')">
+      <div class="thumbtag">${dur} · 🚗 ${t.drive}</div>
+    </div>
+    <div class="body">
+      <h4>${t.name}</h4>
+      ${t.note?`<div class="note">${t.note}</div>`:''}
+      ${tags?`<div class="tags">${tags}</div>`:''}
+    </div>`;
+  c.querySelector('.thumb').appendChild(favBtn(t));
+  c.onclick=()=>openDetail(t,'trip');
+  return c;
+}
+function supplyCard(s){
+  const c=el('div','card');
+  const tags=(s.tags||[]).map(t=>`<span class="tag ${/Nächstes|Notfall|Sonntag/.test(t)?'hot':''}">${t}</span>`).join('');
+  c.innerHTML=`
+    <div class="body">
+      <div class="top"><div><h4>${s.name}</h4><div class="kind">${s.kind||''}</div></div></div>
+      ${s.area?`<div class="area">📍 ${s.area}</div>`:''}
+      ${s.hours?`<div class="hours">🕑 ${s.hours}</div>`:''}
+      ${s.note?`<div class="note">${s.note}</div>`:''}
+      ${tags?`<div class="tags">${tags}</div>`:''}
+    </div>`;
+  c.onclick=()=>openDetail(s,'supply');
+  return c;
+}
+function chargeCard(c0){
+  const c=el('div','card');
+  c.innerHTML=`<div class="body"><div class="top"><div><h4>⚡ ${c0.name}</h4><div class="kind">${c0.net}</div></div></div>
+    <div class="area">📍 ${c0.area}</div><div class="note">${c0.note}</div></div>`;
+  c.onclick=()=>openDetail({name:c0.name, kind:c0.net, area:c0.area, details:c0.note, map:c0.name+' '+c0.area},'supply');
+  return c;
+}
+
+/* ---------- Essen ---------- */
+const EAT_CATS=[['all','Alle'],['fav','★ Merkliste'],['nah','Nahe Fana'],['bergen','Bergen Stadt'],['bar','Bars'],['cafe','Cafés'],['quick','Schnell']];
+let eatFilter='all', eatQuery='';
+const eatFiltersEl=$('#eatFilters');
+EAT_CATS.forEach(([id,l],i)=>{const c=el('button','chip'+(i===0?' active':''),l); c.dataset.id=id;
+  c.onclick=()=>{eatFilter=id; eatFiltersEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.id===id)); renderEat();}; eatFiltersEl.appendChild(c);});
+$('#eatSearch').oninput=e=>{eatQuery=e.target.value.toLowerCase(); renderEat();};
+function renderEat(){
+  const list=$('#eatList'); list.innerHTML='';
+  let items=PLACES.filter(p=> eatFilter==='all'?true : eatFilter==='fav'?isFav(p.name) : p.cat===eatFilter);
+  if(eatQuery) items=items.filter(p=>(p.name+p.kind+p.note+(p.tags||[]).join(' ')).toLowerCase().includes(eatQuery));
+  if(!items.length){list.appendChild(el('div','empty', eatFilter==='fav'?'Noch nichts gemerkt – tippt das ☆ auf einer Karte.':'Nichts gefunden 🤷'));return;}
+  items.forEach(p=>list.appendChild(placeCard(p)));
+}
+
+/* ---------- Versorgung ---------- */
+const SHOP_CATS=[['all','Alle'],['food','Lebensmittel'],['wine','Vinmonopolet'],['pharma','Apotheke'],['mall','Center'],['charge','E-Laden']];
+let shopFilter='all';
+const shopFiltersEl=$('#shopFilters');
+SHOP_CATS.forEach(([id,l],i)=>{const c=el('button','chip'+(i===0?' active':''),l); c.dataset.id=id;
+  c.onclick=()=>{shopFilter=id; shopFiltersEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.id===id)); renderShop();}; shopFiltersEl.appendChild(c);});
+function renderShop(){
+  const list=$('#shopList'); list.innerHTML='';
+  if(shopFilter==='charge'){ CHARGING.forEach(c=>list.appendChild(chargeCard(c))); return; }
+  SUPPLY.filter(s=>shopFilter==='all'||s.cat===shopFilter).forEach(s=>list.appendChild(supplyCard(s)));
+  if(shopFilter==='all'){ list.appendChild(el('h3','sub','⚡ E-Ladestationen')); CHARGING.forEach(c=>list.appendChild(chargeCard(c))); }
+}
+
+/* ---------- Ausflüge ---------- */
+const TRIP_CATS=[['all','Alle'],['fav','★ Merkliste'],['halb','Halbtag'],['ganz','Ganztag'],['Nah','Nah'],['Fjord','Fjord'],['Familie','Familie'],['Wandern','Wandern']];
+let tripFilter='all';
+const tripFiltersEl=$('#tripFilters');
+TRIP_CATS.forEach(([id,l],i)=>{const c=el('button','chip'+(i===0?' active':''),l); c.dataset.id=id;
+  c.onclick=()=>{tripFilter=id; tripFiltersEl.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.id===id)); renderTrips();}; tripFiltersEl.appendChild(c);});
+function renderTrips(){
+  const list=$('#tripList'); list.innerHTML='';
+  let items=TRIPS.filter(t=> tripFilter==='all'?true : tripFilter==='fav'?isFav(t.name) : (t.dur===tripFilter||(t.tags||[]).includes(tripFilter)));
+  if(!items.length){list.appendChild(el('div','empty', tripFilter==='fav'?'Noch nichts gemerkt – tippt das ☆ auf einer Karte.':'Nichts gefunden 🤷'));return;}
+  items.forEach(t=>list.appendChild(tripCard(t)));
+}
+
+function rerenderLists(){ renderEat(); renderTrips(); }
+
+/* ---------- Home: Ausflug-Highlights ---------- */
+const homeTripsEl=$('#homeTrips');
+TRIPS.filter(t=>(t.tags||[]).includes('Empfehlung')).forEach(t=>homeTripsEl.appendChild(tripCard(t)));
+
+/* ---------- Phrases ---------- */
+const phEl=$('#phrases');
+PHRASES.forEach((g,i)=>{
+  const grp=el('div','pgroup'+(i===0?' open':''));
+  const rows=g.items.map(([no,de,pr])=>`<div class="prow"><div class="no">${no}</div><div class="de">${de}</div><div class="pr">🔊 ${pr}</div></div>`).join('');
+  grp.innerHTML=`<div class="ph">${g.group}<span class="arrow">▸</span></div><div class="pbody">${rows}</div>`;
+  grp.querySelector('.ph').onclick=()=>grp.classList.toggle('open'); phEl.appendChild(grp);
+});
+const foodEl=$('#foodList');
+FOOD.forEach(([n,d,img])=>{const c=el('div','foodcard',`<img src="${img}" alt="" loading="lazy"><div><h4>${n}</h4><p>${d}</p></div>`); foodEl.appendChild(c);});
+
+/* ---------- Emergency / Packing ---------- */
+EMERGENCY.forEach(e=>{const a=el('a','ecall',`<span class="lbl">${e.label}</span><span class="num">${e.num}</span>`); a.href='tel:'+e.num; $('#emergGrid').appendChild(a);});
+const packEl=$('#packing'); let packState={};
+try{packState=JSON.parse(localStorage.getItem('bergen_pack')||'{}');}catch(e){}
+PACKING.forEach((item,i)=>{
+  const done=!!packState[i]; const lab=el('label','check'+(done?' done':''));
+  lab.innerHTML=`<input type="checkbox" ${done?'checked':''}><span>${item}</span>`;
+  lab.querySelector('input').onchange=e=>{packState[i]=e.target.checked; lab.classList.toggle('done',e.target.checked); localStorage.setItem('bergen_pack',JSON.stringify(packState));};
+  packEl.appendChild(lab);
+});
+
+/* initial render */
+renderEat(); renderShop(); renderTrips();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+if(location.hash){const id=location.hash.slice(1); if(document.getElementById(id)) go(id);}
+</script>
+</body>
+</html>

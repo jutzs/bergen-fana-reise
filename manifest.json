@@ -1,0 +1,13 @@
+{
+  "name": "Bergen & Fana Reise-App",
+  "short_name": "Bergen 2026",
+  "description": "Reiseführer für Fana/Bergen – 20.–27. Juni 2026",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a2540",
+  "theme_color": "#0a2540",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
