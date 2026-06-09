@@ -27,13 +27,19 @@ Danach läuft sie wie eine echte App und **offline** (wichtig in Norwegen!).
 **Alternativ kostenlos online stellen:** den Ordner auf [Netlify Drop](https://app.netlify.com/drop) oder GitHub Pages ziehen → Link aufs Handy.
 
 ## Funktionen
-- 🗓 **Tagesplan** für alle 8 Tage (aufklappbar)
-- 🍽 **Essen & Trinken** – Restaurants, Bars, Cafés mit Suche & Filter
+- 🌦 **Live-Wetter** (7-Tage-Vorschau + Sonnenauf-/untergang) via Open-Meteo, mit Offline-Cache
+- 💰 **Reisekasse** – gemeinsame Ausgaben für Michelle, Nathalie, Tobias, Andreas & Simon, **geteilt & in der Cloud gespeichert**; mit Saldo pro Person und automatischem **Ausgleich (wer zahlt wem)**, NOK + €
+- 💱 **Währungsrechner** NOK ⇄ EUR mit Live-Kurs
+- 🟢 **„Jetzt geöffnet"-Anzeige** bei Läden/Vinmonopolet (aus den Öffnungszeiten berechnet, Bergen-Zeit)
+- 🍽 **Essen & Trinken** – Restaurants, Bars, Cafés mit Suche, Filter, Bildern & Google-Bewertungen
 - 🛒 **Versorgung** – Supermärkte, Vinmonopolet, Apotheken, Center, E-Laden
-- 🧭 **Ausflüge** – Halb-/Ganztagestouren mit Fahrzeiten
+- 🧭 **Ausflüge** – Halb-/Ganztagestouren mit Bildern, Details & Merkliste (☆)
 - 🗣 **Sprachführer** Norwegisch–Deutsch mit Aussprache
 - ℹ️ **Praktisch** – Notruf, Geld, Fahren, Wetter, Packliste (mit Häkchen)
 - **🧭 Route-Buttons** öffnen Google Maps mit Navigation ab eurer Unterkunft
+
+### Hinweis zur Reisekasse
+Die Ausgaben werden über einen kostenlosen, schlüssellosen Cloud-Speicher geteilt – **alle, die dieselbe App-URL öffnen, sehen dieselbe Kasse**. Es gibt zusätzlich einen lokalen Cache: Einträge funktionieren auch offline und werden beim nächsten Online-Zugriff automatisch zusammengeführt (Merge nach Eintrags-ID). Kein Login nötig.
 
 ## Detailansicht & Bilder
 Tippt auf eine **Karte** (Restaurant, Ausflug, Shop) → es öffnet sich eine **Detailansicht** mit großem Bild, ausführlicher Beschreibung und Buttons (Route, Google-Bewertungen, Anrufen). Mit dem **☆** merkt ihr euch Favoriten – Filter „★ Merkliste" zeigt nur diese.

@@ -231,6 +231,59 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
 .btn.call{background:#eafaf0; color:#0a7d3c; border-color:#cdeeda}
 .btn.google{background:#fff4e5; color:#b5651d; border-color:#f0d9b5}
 .tapnote{font-size:11px; color:var(--muted); text-align:center; margin:-4px 0 10px}
+.muted{color:var(--muted); font-weight:400; font-size:12px}
+
+/* Weather */
+.wstrip{display:flex; gap:8px; overflow-x:auto; padding:2px 0 6px; scrollbar-width:none}
+.wstrip::-webkit-scrollbar{display:none}
+.wday{flex:0 0 auto; width:76px; background:#fff; border:1px solid var(--line); border-radius:14px;
+  padding:10px 6px; text-align:center; box-shadow:var(--shadow)}
+.wday .wd{font-size:11px; color:var(--muted); font-weight:700}
+.wday .wi{font-size:26px; line-height:1.3}
+.wday .wt{font-size:13px; font-weight:700; color:var(--navy)}
+.wday .wt small{color:var(--muted); font-weight:600}
+.wday .wp{font-size:10.5px; color:var(--sky); margin-top:2px}
+.wsun{font-size:12px; color:#33485c; background:#fff; border:1px solid var(--line);
+  border-radius:12px; padding:8px 12px; margin-top:8px; box-shadow:var(--shadow); text-align:center}
+
+/* Chips (form) */
+.flabel{display:block; font-size:12px; font-weight:700; color:var(--navy); margin:12px 0 6px; text-transform:uppercase; letter-spacing:.4px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip2{border:1.5px solid var(--line); background:#fff; color:var(--muted); padding:8px 12px;
+  border-radius:999px; font-size:13px; font-weight:600; cursor:pointer; user-select:none}
+.chip2.sel{background:var(--navy); color:#fff; border-color:var(--navy)}
+
+/* Kasse */
+.avatar{width:30px; height:30px; border-radius:50%; color:#fff; font-size:12px; font-weight:700;
+  display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto}
+.ksync{font-size:12px; font-weight:600}
+.ksync.ok{color:#0a7d3c} .ksync.off{color:#b5651d} .ksync.err{color:var(--red)}
+.ksum{background:linear-gradient(135deg,var(--navy),var(--navy2)); color:#fff; border-radius:var(--r);
+  padding:16px; box-shadow:var(--shadow); margin-bottom:12px}
+.ksum .tot{font-size:28px; font-weight:800}
+.ksum .totl{font-size:12px; opacity:.85}
+.ksum .perhead{font-size:11px; opacity:.8; margin:12px 0 6px; text-transform:uppercase; letter-spacing:.5px}
+.kbal{display:flex; align-items:center; gap:8px; padding:5px 0; font-size:13.5px}
+.kbal .nm{flex:1}
+.kbal .amt{font-weight:700}
+.kbal .pos{color:#7CFFB2} .kbal .neg{color:#ffb3b3}
+.settle{background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
+.settle h4{margin:0 0 8px; font-size:14px}
+.settle .row{display:flex; align-items:center; gap:8px; font-size:13.5px; padding:6px 0; border-top:1px dashed var(--line)}
+.settle .row:first-of-type{border:0}
+.settle .arrow2{color:var(--muted)}
+.exp{display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line);
+  border-radius:14px; padding:10px 12px; margin-bottom:8px; box-shadow:var(--shadow)}
+.exp .einfo{flex:1; min-width:0}
+.exp .edesc{font-weight:700; font-size:14px}
+.exp .emeta{font-size:11.5px; color:var(--muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.exp .eamt{text-align:right; flex:0 0 auto}
+.exp .eamt b{font-size:15px; color:var(--navy)}
+.exp .eamt small{display:block; font-size:11px; color:var(--muted)}
+.exp .edel{flex:0 0 auto; border:0; background:none; color:#cbd5e1; font-size:18px; cursor:pointer; padding:4px}
+.exp .edel:hover{color:var(--red)}
+.openbadge{font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; margin-left:6px}
+.openbadge.o{background:#e6f7ec; color:#0a7d3c} .openbadge.c{background:#fdeaea; color:var(--red)}
 </style>
 </head>
 <body>
@@ -262,6 +315,9 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
       <div class="stat"><div class="n">16</div><div class="l">Ausflüge</div></div>
       <div class="stat"><div class="n">~19h</div><div class="l">Tageslicht</div></div>
     </div>
+
+    <h3 class="sub">🌦 Wetter · 7 Tage</h3>
+    <div id="weatherCard"></div>
 
     <h3 class="sub">⭐ Ausflug-Highlights</h3>
     <div id="homeTrips"></div>
@@ -305,6 +361,17 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
     <p class="lead">Wählt selbst aus – tippt eine Karte für Bild &amp; ausführliche Beschreibung. ☆ = merken.</p>
     <div class="filters" id="tripFilters"></div>
     <div id="tripList"></div>
+  </section>
+
+  <!-- REISEKASSE -->
+  <section id="kasse">
+    <h2 class="sec">💰 Reisekasse</h2>
+    <p class="lead">Gemeinsame Ausgaben – für alle geteilt &amp; gespeichert. <span id="kStatus" class="ksync">…</span></p>
+    <div id="kSummary"></div>
+    <div id="kSettle"></div>
+    <button class="btn primary" style="width:100%; margin:6px 0 14px" onclick="openExpenseForm()">＋ Ausgabe hinzufügen</button>
+    <h3 class="sub">🧾 Ausgaben</h3>
+    <div id="kList"></div>
   </section>
 
   <!-- SPRACHE -->
@@ -361,6 +428,16 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
       <div class="kv"><span>Sonntags</span><b>Läden zu (ausser Bunnpris/Kiosk/Bäcker)</b></div>
     </div>
 
+    <h3 class="sub">💱 Währungsrechner</h3>
+    <div class="info">
+      <div style="display:flex; gap:8px; align-items:center">
+        <input class="search" id="cvNok" type="number" inputmode="decimal" placeholder="NOK" style="margin:0">
+        <span style="font-weight:700; color:var(--muted)">⇄</span>
+        <input class="search" id="cvEur" type="number" inputmode="decimal" placeholder="EUR" style="margin:0">
+      </div>
+      <p class="tapnote" id="cvRate" style="margin:8px 0 0">Kurs wird geladen…</p>
+    </div>
+
     <h3 class="sub">🌦 Wetter Ende Juni</h3>
     <div class="info">
       <p>Tags <b>15–18 °C</b> (Sonne bis ~22 °C), nachts ~10–12 °C. Regnerisch – mehrere Schauer pro Woche. <b>~19 h Tageslicht</b>, Sonne ~04:15–23:15, „weisse Nächte". Juni ist Bergens sonnigster Monat.</p>
@@ -379,6 +456,32 @@ footer{text-align:center; font-size:11px; color:var(--muted); padding:20px 14px 
 </main>
 
 <div class="bnav" id="bnav"></div>
+
+<!-- Expense form overlay -->
+<div class="overlay" id="expModal">
+  <div class="sheet">
+    <div class="ovbody" style="padding:18px">
+      <div style="display:flex; align-items:center; margin-bottom:12px">
+        <h3 style="margin:0; font-size:19px" id="expTitle">Neue Ausgabe</h3>
+        <button class="btn" style="flex:0; min-width:auto; margin-left:auto; padding:6px 12px" onclick="closeExpenseForm()">✕</button>
+      </div>
+      <label class="flabel">Wer hat bezahlt?</label>
+      <div class="chips" id="expPayer"></div>
+      <label class="flabel">Betrag (NOK)</label>
+      <input class="search" id="expAmount" type="number" inputmode="decimal" placeholder="z. B. 450" style="margin-bottom:4px">
+      <div id="expEur" class="tapnote" style="text-align:left; margin:0 0 10px"></div>
+      <label class="flabel">Wofür?</label>
+      <input class="search" id="expDesc" placeholder="z. B. Abendessen Pingvinen">
+      <label class="flabel">Kategorie</label>
+      <div class="chips" id="expCat"></div>
+      <label class="flabel">Geteilt unter <span id="expSplitCount" class="muted"></span></label>
+      <div class="chips" id="expSplit"></div>
+      <div class="actions">
+        <button class="btn primary" style="flex:1" onclick="submitExpense()">✓ Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Detail overlay -->
 <div class="overlay" id="overlay">
@@ -415,10 +518,10 @@ const isFav=id=>favs.has(id);
 function toggleFav(id){ favs.has(id)?favs.delete(id):favs.add(id); localStorage.setItem(FAV_KEY,JSON.stringify([...favs])); }
 
 /* Tabs */
-const TABS=[['home','Start'],['eat','Essen'],['shop','Shops'],['trips','Ausflüge'],['lang','Sprache'],['info','Praktisch']];
+const TABS=[['home','Start'],['eat','Essen'],['shop','Shops'],['trips','Ausflüge'],['kasse','Kasse'],['lang','Sprache'],['info','Praktisch']];
 const tabsEl=$('#tabs'), bnavEl=$('#bnav');
 TABS.forEach(([id,l])=>{const b=el('button',null,l); b.dataset.id=id; b.onclick=()=>go(id); tabsEl.appendChild(b);});
-const BNAV=[['home','🏠','Start'],['eat','🍽','Essen'],['shop','🛒','Shops'],['trips','🧭','Touren'],['info','ℹ️','Info']];
+const BNAV=[['home','🏠','Start'],['eat','🍽','Essen'],['trips','🧭','Touren'],['kasse','💰','Kasse'],['shop','🛒','Shops'],['info','ℹ️','Info']];
 BNAV.forEach(([id,ic,l])=>{const b=el('button',null,`<span class="bi">${ic}</span>${l}`); b.dataset.id=id; b.onclick=()=>go(id); bnavEl.appendChild(b);});
 function go(id){
   document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===id));
@@ -439,7 +542,7 @@ $('#hero').style.backgroundImage=`url("${IMG.bryggen}")`;
 })();
 
 /* Quick links */
-[['eat','🍽','Wo essen?'],['shop','🛒','Einkaufen'],['trips','🧭','Ausflüge'],['lang','🗣','Sprachhilfe'],['info','🚨','Notfall & Info']]
+[['eat','🍽','Wo essen?'],['trips','🧭','Ausflüge'],['kasse','💰','Reisekasse'],['shop','🛒','Einkaufen'],['lang','🗣','Sprachhilfe'],['info','🚨','Notfall & Info']]
 .forEach(([id,ic,l])=>{const b=el('button','qbtn',`<span class="qi">${ic}</span>${l}`); b.onclick=()=>go(id); $('#quicklinks').appendChild(b);});
 
 /* ---------- Detail overlay ---------- */
@@ -536,7 +639,7 @@ function supplyCard(s){
   const tags=(s.tags||[]).map(t=>`<span class="tag ${/Nächstes|Notfall|Sonntag/.test(t)?'hot':''}">${t}</span>`).join('');
   c.innerHTML=`
     <div class="body">
-      <div class="top"><div><h4>${s.name}</h4><div class="kind">${s.kind||''}</div></div></div>
+      <div class="top"><div><h4>${s.name}${openBadge(s.hours)}</h4><div class="kind">${s.kind||''}</div></div></div>
       ${s.area?`<div class="area">📍 ${s.area}</div>`:''}
       ${s.hours?`<div class="hours">🕑 ${s.hours}</div>`:''}
       ${s.note?`<div class="note">${s.note}</div>`:''}
@@ -621,6 +724,240 @@ PACKING.forEach((item,i)=>{
   lab.querySelector('input').onchange=e=>{packState[i]=e.target.checked; lab.classList.toggle('done',e.target.checked); localStorage.setItem('bergen_pack',JSON.stringify(packState));};
   packEl.appendChild(lab);
 });
+
+/* ====================================================================
+   LIVE-FEATURES: Wetter · Wechselkurs · Öffnungszeiten · Reisekasse
+   ==================================================================== */
+
+/* ---------- Bergen-Zeit (Europe/Oslo) ---------- */
+function osloNow(){
+  const p=new Intl.DateTimeFormat('de-DE',{timeZone:'Europe/Oslo',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+  const g=t=>(p.find(x=>x.type===t)||{}).value;
+  const wdMap={'Mo':1,'Di':2,'Mi':3,'Do':4,'Fr':5,'Sa':6,'So':0};
+  const wd=(g('weekday')||'').slice(0,2);
+  return { dow:wdMap[wd], minutes:(+g('hour'))*60+(+g('minute')) };
+}
+
+/* ---------- Öffnungszeiten-Parser (best effort) ---------- */
+const DOW={'So':0,'Mo':1,'Di':2,'Mi':3,'Do':4,'Fr':5,'Sa':6};
+function isOpenNow(hours){
+  if(!hours) return null;
+  const now=osloNow();
+  if(/täglich/i.test(hours)){
+    const m=hours.match(/bis\s*(\d{1,2})/); if(m){ const close=(+m[1])*60; return now.minutes>= 8*60 && now.minutes<close; }
+  }
+  let found=false;
+  for(let seg of hours.split('·')){
+    seg=seg.trim();
+    const dm=seg.match(/^(Mo|Di|Mi|Do|Fr|Sa|So)(?:\s*[–-]\s*(Mo|Di|Mi|Do|Fr|Sa|So))?/);
+    if(!dm) continue;
+    let d1=DOW[dm[1]], d2=dm[2]?DOW[dm[2]]:d1;
+    let days=[]; let d=d1; for(let i=0;i<7;i++){ days.push(d); if(d===d2)break; d=(d+1)%7; }
+    if(!days.includes(now.dow)) continue;
+    found=true;
+    if(/zu|geschl/i.test(seg)) return false;
+    const tm=seg.match(/(\d{1,2})(?::(\d{2}))?\s*[–-]\s*(\d{1,2})(?::(\d{2}))?/);
+    if(tm){ const o=(+tm[1])*60+(+(tm[2]||0)), c=(+tm[3])*60+(+(tm[4]||0)); return now.minutes>=o && now.minutes<c; }
+  }
+  return found?null:null;
+}
+function openBadge(hours){
+  const o=isOpenNow(hours);
+  if(o===true) return '<span class="openbadge o">🟢 offen</span>';
+  if(o===false) return '<span class="openbadge c">🔴 zu</span>';
+  return '';
+}
+
+/* ---------- Wechselkurs ---------- */
+let RATE=FX_FALLBACK; // NOK je EUR
+const nok2eur=n=>n/RATE, eur2nok=e=>e*RATE;
+function fmtEur(n){ return '€'+ (Math.round(n*100)/100).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtNok(n){ return Math.round(n).toLocaleString('de-DE')+' kr'; }
+async function loadRate(){
+  try{ localStorage.getItem('bergen_rate') && (RATE=+localStorage.getItem('bergen_rate')); }catch(e){}
+  try{
+    const r=await fetch(FX_API,{cache:'no-store'}); const d=await r.json();
+    if(d.rates && d.rates.NOK){ RATE=d.rates.NOK; localStorage.setItem('bergen_rate',RATE); }
+  }catch(e){}
+  const cv=$('#cvRate'); if(cv) cv.textContent=`1 € ≈ ${RATE.toFixed(2)} kr  ·  100 kr ≈ ${(100/RATE).toFixed(2)} €`;
+  renderKasse(); updateExpEur();
+}
+// Converter wiring
+(function(){
+  const nokI=$('#cvNok'), eurI=$('#cvEur');
+  if(nokI){ nokI.oninput=()=>{ eurI.value = nokI.value? (nok2eur(+nokI.value)).toFixed(2):''; };
+            eurI.oninput=()=>{ nokI.value = eurI.value? (eur2nok(+eurI.value)).toFixed(0):''; }; }
+})();
+
+/* ---------- Wetter (Open-Meteo) ---------- */
+async function loadWeather(){
+  const box=$('#weatherCard'); if(!box) return;
+  // Offline-Fallback aus Cache
+  let cached=null; try{cached=JSON.parse(localStorage.getItem('bergen_wx')||'null');}catch(e){}
+  const url=`https://api.open-meteo.com/v1/forecast?latitude=${GEO.lat}&longitude=${GEO.lon}`
+    +`&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset`
+    +`&timezone=Europe%2FOslo&forecast_days=7`;
+  let data=cached;
+  try{ const r=await fetch(url,{cache:'no-store'}); data=await r.json(); localStorage.setItem('bergen_wx',JSON.stringify(data)); }
+  catch(e){ if(!cached){ box.innerHTML='<div class="wsun">🌦 Wetter offline nicht verfügbar – im Schnitt 15–18 °C, oft Regen, ~19 h hell.</div>'; return; } }
+  if(!data||!data.daily){ return; }
+  const d=data.daily, days=d.time.length;
+  const wd=['So','Mo','Di','Mi','Do','Fr','Sa'];
+  let strip='<div class="wstrip">';
+  for(let i=0;i<days;i++){
+    const dt=new Date(d.time[i]+'T12:00:00');
+    const code=WMO[d.weather_code[i]]||['🌡','—'];
+    strip+=`<div class="wday"><div class="wd">${i===0?'Heute':wd[dt.getDay()]}</div>`
+      +`<div class="wi" title="${code[1]}">${code[0]}</div>`
+      +`<div class="wt">${Math.round(d.temperature_2m_max[i])}°<small>/${Math.round(d.temperature_2m_min[i])}°</small></div>`
+      +`<div class="wp">💧${d.precipitation_probability_max[i]??0}%</div></div>`;
+  }
+  strip+='</div>';
+  const sr=(d.sunrise[0]||'').slice(11,16), ss=(d.sunset[0]||'').slice(11,16);
+  strip+=`<div class="wsun">🌅 Sonnenaufgang ${sr} · 🌇 Sonnenuntergang ${ss} · ☔ Regenjacke bereithalten</div>`;
+  box.innerHTML=strip;
+}
+
+/* ====================================================================
+   REISEKASSE – geteilt über Cloud-Store, mit lokalem Merge & Ausgleich
+   ==================================================================== */
+let KASSE={expenses:[]};
+const memColor=n=>(MEMBERS.find(m=>m.name===n)||{}).color||'#888';
+const initials=n=>n.slice(0,2);
+function avatar(n){ return `<span class="avatar" style="background:${memColor(n)}">${initials(n)}</span>`; }
+function loadKasseLocal(){ try{KASSE=JSON.parse(localStorage.getItem('bergen_kasse')||'{"expenses":[]}');}catch(e){KASSE={expenses:[]};} if(!KASSE.expenses)KASSE.expenses=[]; }
+function saveKasseLocal(){ localStorage.setItem('bergen_kasse',JSON.stringify(KASSE)); }
+function mergeExp(a,b){
+  const map=new Map();
+  for(const e of [...(b||[]),...(a||[])]){ const ex=map.get(e.id); if(!ex||(e.ts||0)>=(ex.ts||0)) map.set(e.id,e); }
+  return [...map.values()].sort((x,y)=>(y.ts||0)-(x.ts||0));
+}
+function setStatus(txt,cls){ const s=$('#kStatus'); if(s){ s.textContent=txt; s.className='ksync '+(cls||''); } }
+async function kasseSync(push){
+  setStatus('⏳ synchronisiere…','');
+  try{
+    const r=await fetch(KASSE_API,{cache:'no-store'}); const obj=await r.json();
+    const remote=(obj && obj.data && obj.data.expenses)||[];
+    const merged=mergeExp(KASSE.expenses, remote);
+    const changed = push || merged.length!==remote.length || JSON.stringify(merged)!==JSON.stringify(remote);
+    KASSE.expenses=merged; saveKasseLocal(); renderKasse();
+    if(changed){
+      await fetch(KASSE_API,{method:'PUT',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({name:'BergenFanaKasse2026',data:{expenses:merged,v:1}})});
+    }
+    setStatus('✅ synchronisiert','ok');
+  }catch(e){ setStatus('⚠️ offline – lokal gespeichert','off'); }
+}
+function activeExp(){ return KASSE.expenses.filter(e=>!e.deleted); }
+function computeBalances(){
+  const bal={}; MEMBERS.forEach(m=>bal[m.name]=0);
+  activeExp().forEach(e=>{
+    const split=(e.split&&e.split.length)?e.split:MEMBERS.map(m=>m.name);
+    const share=e.amount/split.length;
+    if(bal[e.payer]!==undefined) bal[e.payer]+=e.amount;
+    split.forEach(s=>{ if(bal[s]!==undefined) bal[s]-=share; });
+  });
+  return bal;
+}
+function settle(bal){
+  const cred=[], deb=[];
+  Object.entries(bal).forEach(([n,v])=>{ if(v>0.5)cred.push({n,v}); else if(v<-0.5)deb.push({n,v:-v}); });
+  cred.sort((a,b)=>b.v-a.v); deb.sort((a,b)=>b.v-a.v);
+  const tx=[]; let i=0,j=0;
+  while(i<deb.length && j<cred.length){
+    const amt=Math.min(deb[i].v,cred[j].v);
+    tx.push({from:deb[i].n,to:cred[j].n,amt});
+    deb[i].v-=amt; cred[j].v-=amt;
+    if(deb[i].v<0.5)i++; if(cred[j].v<0.5)j++;
+  }
+  return tx;
+}
+function renderKasse(){
+  if(!$('#kSummary')) return;
+  const exp=activeExp();
+  const total=exp.reduce((a,e)=>a+e.amount,0);
+  const per=total/MEMBERS.length;
+  const bal=computeBalances();
+  // Summary
+  $('#kSummary').innerHTML=`<div class="ksum">
+    <div class="totl">Gesamt ausgegeben</div>
+    <div class="tot">${fmtNok(total)} <span style="font-size:15px;opacity:.8">≈ ${fmtEur(nok2eur(total))}</span></div>
+    <div class="perhead">Saldo pro Person (${fmtNok(per)} ≈ ${fmtEur(nok2eur(per))} im Schnitt)</div>
+    ${MEMBERS.map(m=>{const v=bal[m.name]; const pos=v>=0;
+      return `<div class="kbal">${avatar(m.name)}<span class="nm">${m.name}</span>
+        <span class="amt ${pos?'pos':'neg'}">${pos?'+':'−'}${fmtNok(Math.abs(v))}</span></div>`;}).join('')}
+  </div>`;
+  // Settlement
+  const tx=settle(bal);
+  $('#kSettle').innerHTML = tx.length? `<div class="settle"><h4>⚖️ Ausgleich – wer zahlt wem</h4>
+    ${tx.map(t=>`<div class="row">${avatar(t.from)}<b>${t.from}</b><span class="arrow2">→</span>${avatar(t.to)}<b>${t.to}</b>
+      <span style="margin-left:auto; font-weight:700">${fmtNok(t.amt)}</span></div>`).join('')}</div>`
+    : (exp.length?'<div class="settle"><h4>⚖️ Ausgleich</h4><div class="row" style="color:var(--muted)">Alles ausgeglichen 🎉</div></div>':'');
+  // List
+  $('#kList').innerHTML = exp.length? exp.map(e=>{
+    const split=(e.split&&e.split.length)?e.split:MEMBERS.map(m=>m.name);
+    return `<div class="exp">${avatar(e.payer)}
+      <div class="einfo"><div class="edesc">${e.cat?e.cat.split(' ')[0]+' ':''}${e.desc||'Ausgabe'}</div>
+        <div class="emeta">${e.payer} · geteilt: ${split.length===MEMBERS.length?'alle':split.join(', ')}</div></div>
+      <div class="eamt"><b>${fmtNok(e.amount)}</b><small>${fmtEur(nok2eur(e.amount))}</small></div>
+      <button class="edel" onclick="deleteExpense('${e.id}')">🗑</button></div>`;
+  }).join('') : '<div class="empty">Noch keine Ausgaben. Tippt „＋ Ausgabe hinzufügen".</div>';
+}
+function deleteExpense(id){
+  const e=KASSE.expenses.find(x=>x.id===id); if(!e)return;
+  if(!confirm('Ausgabe löschen?')) return;
+  e.deleted=true; e.ts=Date.now(); saveKasseLocal(); renderKasse(); kasseSync(true);
+}
+
+/* ---- Ausgaben-Formular ---- */
+let formState={payer:'Simon', cat:EXP_CATS[0], split:MEMBERS.map(m=>m.name)};
+function chipRow(container, options, selected, onToggle, multi){
+  const box=$(container); box.innerHTML='';
+  options.forEach(opt=>{
+    const val=typeof opt==='object'?opt.name:opt;
+    const on= multi? selected.includes(val) : selected===val;
+    const c=el('div','chip2'+(on?' sel':''), val);
+    if(typeof opt==='object'){ c.style.borderColor=on?opt.color:'var(--line)'; if(on){c.style.background=opt.color;c.style.color='#fff';} }
+    c.onclick=()=>onToggle(val,c); box.appendChild(c);
+  });
+}
+function openExpenseForm(){
+  formState={payer:'Simon', cat:EXP_CATS[0], split:MEMBERS.map(m=>m.name)};
+  $('#expAmount').value=''; $('#expDesc').value=''; $('#expEur').textContent='';
+  renderPayer(); renderCat(); renderSplit();
+  $('#expModal').classList.add('open'); document.body.style.overflow='hidden';
+}
+function renderPayer(){ chipRow('#expPayer', MEMBERS, formState.payer, v=>{formState.payer=v; renderPayer();}, false); }
+function renderCat(){ chipRow('#expCat', EXP_CATS, formState.cat, v=>{formState.cat=v; renderCat();}, false); }
+function renderSplit(){
+  chipRow('#expSplit', MEMBERS, formState.split, v=>{
+    const i=formState.split.indexOf(v);
+    if(i>=0){ if(formState.split.length>1) formState.split.splice(i,1); } else formState.split.push(v);
+    renderSplit();
+  }, true);
+  $('#expSplitCount').textContent='('+formState.split.length+'/'+MEMBERS.length+')';
+}
+function updateExpEur(){
+  const v=+($('#expAmount')?.value||0);
+  const t=$('#expEur'); if(t) t.textContent = v? `≈ ${fmtEur(nok2eur(v))}` : '';
+}
+$('#expAmount') && ($('#expAmount').oninput=updateExpEur);
+function closeExpenseForm(){ $('#expModal').classList.remove('open'); document.body.style.overflow=''; }
+$('#expModal').addEventListener('click',e=>{ if(e.target.id==='expModal') closeExpenseForm(); });
+function submitExpense(){
+  const amount=+($('#expAmount').value);
+  if(!amount||amount<=0){ $('#expAmount').focus(); return; }
+  const e={ id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), ts:Date.now(),
+    payer:formState.payer, amount:amount, desc:$('#expDesc').value.trim(),
+    cat:formState.cat, split:[...formState.split] };
+  KASSE.expenses.unshift(e); saveKasseLocal(); renderKasse(); closeExpenseForm(); kasseSync(true);
+}
+
+/* ---- Init Live-Features ---- */
+loadKasseLocal(); renderKasse();
+loadRate(); loadWeather(); kasseSync(false);
+// Bei Rückkehr in die App neu syncen
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ kasseSync(false); } });
 
 /* initial render */
 renderEat(); renderShop(); renderTrips();

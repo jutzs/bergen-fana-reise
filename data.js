@@ -6,6 +6,35 @@
 
 const HOME = "Austrevågen 111, 5244 Fana, Norway";
 
+/* ---- Live-Dienste (kostenlos, ohne API-Key) ---- */
+const GEO = { lat:60.29, lon:5.33, name:"Fana / Bergen" };           // Open-Meteo
+const FX_API = "https://api.frankfurter.dev/v1/latest?base=EUR&symbols=NOK"; // Wechselkurs
+const FX_FALLBACK = 11.0;                                            // NOK je EUR, Notwert
+/* Geteilte Reisekasse (persistenter Cloud-Store, von allen geteilt) */
+const KASSE_API = "https://api.restful-api.dev/objects/ff8081819d82fab6019eacbf7496578c";
+const MEMBERS = [
+  { name:"Michelle", color:"#e0568f" },
+  { name:"Nathalie", color:"#8b5cf6" },
+  { name:"Tobias",   color:"#0ea5a4" },
+  { name:"Andreas",  color:"#f59e0b" },
+  { name:"Simon",    color:"#3b82f6" },
+];
+const EXP_CATS = ["🍽 Essen","🛒 Lebensmittel","⛽ Sprit/Laden","🎟 Aktivität","🏠 Unterkunft","🧺 Sonstiges"];
+
+/* WMO-Wettercodes → Symbol + Text (Open-Meteo) */
+const WMO = {
+  0:["☀️","Klar"],1:["🌤","Meist klar"],2:["⛅","Wolkig"],3:["☁️","Bedeckt"],
+  45:["🌫","Nebel"],48:["🌫","Reifnebel"],
+  51:["🌦","Niesel"],53:["🌦","Niesel"],55:["🌦","Starker Niesel"],
+  56:["🌧","Gefr. Niesel"],57:["🌧","Gefr. Niesel"],
+  61:["🌧","Leichter Regen"],63:["🌧","Regen"],65:["🌧","Starker Regen"],
+  66:["🌧","Gefr. Regen"],67:["🌧","Gefr. Regen"],
+  71:["🌨","Leichter Schnee"],73:["🌨","Schnee"],75:["🌨","Starker Schnee"],77:["🌨","Schneegriesel"],
+  80:["🌦","Schauer"],81:["🌦","Schauer"],82:["⛈","Heftige Schauer"],
+  85:["🌨","Schneeschauer"],86:["🌨","Schneeschauer"],
+  95:["⛈","Gewitter"],96:["⛈","Gewitter m. Hagel"],99:["⛈","Schweres Gewitter"]
+};
+
 /* ---- Bild-Bibliothek (stabile Wikimedia-URLs) ---- */
 const IMG = {
   bergen:       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Bergen_panorama_at_night_-_panoramio_%281%29.jpg/960px-Bergen_panorama_at_night_-_panoramio_%281%29.jpg",
