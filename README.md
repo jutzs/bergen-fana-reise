@@ -2,6 +2,11 @@
 
 Mobile Reise-App für euren Aufenthalt in **Austrevågen 111, 5244 Fana** vom **20.–27. Juni 2026**.
 
+## 🌍 Live (kostenlos auf GitHub Pages)
+**https://jutzs.github.io/bergen-fana-reise/**
+
+Einfach am Handy öffnen → Browser-Menü → **„Zum Startbildschirm hinzufügen"**. Läuft dann wie eine echte App und offline.
+
 ## So nutzt ihr sie
 
 **Schnell ausprobieren (am Computer):**
